@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#09090b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Burger Caracas | Menú Digital & Delivery</title>
+
+  <!-- Tipografía Oficial: Plus Jakarta Sans (400, 600, 700, 800, 900) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            zinc: {
+              950: '#09090b',
+              900: '#18181b',
+              850: '#202024',
+              800: '#27272a',
+              750: '#323238',
+              700: '#3f3f46',
+              600: '#52525b',
+              400: '#a1a1aa',
+              300: '#d4d4d8',
+              100: '#f4f4f5',
+              50: '#fafafa',
+            },
+            accent: {
+              DEFAULT: '#f97316',
+              hover: '#ea580c',
+              dark: '#c2410c',
+              subtle: 'rgba(249, 115, 22, 0.12)'
+            },
+            bcv: {
+              DEFAULT: '#10b981',
+              glow: 'rgba(16, 185, 129, 0.25)'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Iconos FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    /* Estilos nativos ergonómicos y reset */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #09090b;
+      color: #fafafa;
+      overscroll-behavior-y: none;
+    }
+    /* Ocultar barra de scroll en contenedores horizontales */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Filtro para fotos de productos */
+    .product-img {
+      filter: brightness(0.95) contrast(1.05);
+    }
+    /* Soporte Safe Area para móviles con Notch / Home Bar */
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 1rem);
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-50 min-h-screen selection:bg-orange-500/30 selection:text-orange-400 relative">
+
+  <!-- ========================================================
+       1. HEADER FIJO Y COMPACTO ("Dark Urban Native")
+       ======================================================== -->
+  <header class="sticky top-0 z-40 bg-zinc-950/85 backdrop-blur-md border-b border-zinc-800/80 px-4 py-3 transition-all duration-200">
+    <div class="max-w-md mx-auto flex items-center justify-between gap-3">
+      
+      <!-- Identidad y Tasa Oficial BCV -->
+      <div class="flex flex-col">
+        <div class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+          <h1 id="brand-name" class="text-base font-black tracking-tight text-zinc-50 uppercase leading-none">BURGER CARACAS</h1>
+        </div>
+        <!-- Indicador Tasa Oficial con pulso verde neón -->
+        <div class="flex items-center gap-1.5 mt-1 text-[11px] font-semibold text-zinc-400">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-sm shadow-emerald-500/50"></span>
+          </span>
+          <span>Tasa BCV: <strong id="bcv-rate" class="text-emerald-400 font-bold tracking-normal">45.00</strong> Bs/$</span>
+        </div>
+      </div>
+
+      <!-- Botón Carrito con Badge Contador -->
+      <button onclick="openCart()" aria-label="Abrir Carrito" class="relative p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-200 active:scale-95 transition-all">
+        <i class="fa-solid fa-bag-shopping text-base text-zinc-200"></i>
+        <span id="cart-badge" class="hidden absolute -top-1.5 -right-1.5 bg-orange-600 text-white text-[10px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center shadow-lg shadow-orange-600/40 border border-zinc-950">
+          0
+        </span>
+      </button>
+
+    </div>
+  </header>
+
+  <!-- ========================================================
+       2. CONTENIDO PRINCIPAL: BÚSQUEDA, CATEGORÍAS & CATÁLOGO
+       ======================================================== -->
+  <main class="max-w-md mx-auto px-4 pt-3 pb-28">
+    
+    <!-- Barra de Búsqueda Rápida -->
+    <div class="relative mb-3">
+      <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
+      <input 
+        type="text" 
+        id="search-input" 
+        oninput="handleSearch(this.value)"
+        placeholder="Buscar smash burgers, combos, bebidas..." 
+        class="w-full bg-zinc-900 text-zinc-100 placeholder-zinc-500 text-xs font-medium pl-9 pr-8 py-2.5 rounded-xl border border-zinc-800 focus:border-orange-500 transition-colors"
+      >
+      <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 text-xs p-1">
+        <i class="fa-solid fa-circle-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Píldoras de Categorías (Scroll Horizontal) -->
+    <div id="categories-container" class="flex gap-2 overflow-x-auto no-scrollbar pb-2 mb-4">
+      <!-- Se inyectan dinámicamente -->
+    </div>
+
+    <!-- Lista de Productos -->
+    <div id="catalog-container" class="space-y-3">
+      <!-- Las tarjetas se renderizan aquí dinámicamente -->
+      <div class="text-center py-16 text-zinc-500">
+        <i class="fa-solid fa-circle-notch fa-spin text-2xl mb-2 text-orange-500"></i>
+        <p class="text-xs">Cargando menú delicioso...</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================
+       3. BARRA FLOTANTE INFERIOR (BOTTOM FLOATING PILL)
+       ======================================================== -->
+  <div 
+    id="floating-pill" 
+    class="fixed bottom-4 left-4 right-4 max-w-md mx-auto z-30 transition-all duration-300 ease-out transform translate-y-28 opacity-0 pointer-events-none"
+  >
+    <div class="bg-zinc-900/90 backdrop-blur-md border border-zinc-800/80 rounded-2xl shadow-2xl p-3 flex items-center justify-between gap-3">
+      
+      <!-- Resumen de montos -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-500">
+          <i class="fa-solid fa-bag-shopping text-sm"></i>
+        </div>
+        <div>
+          <div class="flex items-baseline gap-1.5">
+            <span id="floating-total-usd" class="text-base font-black text-zinc-50 tracking-tight">$0.00</span>
+            <span id="floating-total-bs" class="text-xs font-bold text-emerald-400">0.00 Bs</span>
+          </div>
+          <p class="text-[11px] text-zinc-400 font-medium leading-none">
+            <span id="floating-items-count" class="font-bold text-zinc-300">0</span> ítems en el pedido
+          </p>
+        </div>
+      </div>
+
+      <!-- Botón CTA Ver Carrito -->
+      <button 
+        onclick="openCart()" 
+        class="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-lg shadow-orange-950 active:scale-95 transition-all flex items-center gap-1.5"
+      >
+        <span>Ver Carrito</span>
+        <i class="fa-solid fa-arrow-right text-[11px]"></i>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ========================================================
+       4. CARRITO COMO BOTTOM SHEET (86% Viewport, Ergonómico)
+       ======================================================== -->
+  <div id="cart-drawer" class="fixed inset-0 z-50 pointer-events-none">
+    
+    <!-- Backdrop con desenfoque -->
+    <div 
+      id="cart-backdrop" 
+      onclick="closeCart()" 
+      class="absolute inset-0 bg-black/75 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-out"
+    ></div>
+
+    <!-- Contenedor del Bottom Sheet -->
+    <div 
+      id="bottom-sheet" 
+      class="absolute bottom-0 left-0 right-0 max-w-lg mx-auto h-[88vh] max-h-[88vh] bg-zinc-900 border-t border-zinc-800 rounded-t-3xl flex flex-col transform translate-y-full transition-transform duration-300 ease-out shadow-2xl pointer-events-auto"
+    >
+      
+      <!-- Zona de Agarre Ergonómica (Handle para swipe down) -->
+      <div id="sheet-handle-area" class="w-full pt-3 pb-2 cursor-grab active:cursor-grabbing flex flex-col items-center">
+        <div class="w-12 h-1.5 bg-zinc-700/80 rounded-full"></div>
+      </div>
+
+      <!-- Cabecera del Bottom Sheet -->
+      <div class="px-5 pb-3 border-b border-zinc-800/80 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <h2 class="text-base font-black text-zinc-50 tracking-tight">Tu Pedido</h2>
+          <span id="sheet-item-count" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-zinc-800 text-orange-400 border border-zinc-700">0</span>
+        </div>
+        <button 
+          onclick="closeCart()" 
+          aria-label="Cerrar pedido"
+          class="w-8 h-8 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 flex items-center justify-center transition active:scale-95"
+        >
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Cuerpo del Carrito Scrollable -->
+      <div class="flex-1 overflow-y-auto px-5 py-4 space-y-5 no-scrollbar">
+        
+        <!-- Lista de Productos en el Carrito -->
+        <div>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3">Detalle de Productos</h3>
+          <div id="cart-items-list" class="space-y-3">
+            <!-- Items renderizados dinámicamente -->
+          </div>
+        </div>
+
+        <!-- ========================================================
+             SECCIÓN 1: MODALIDAD DE ENTREGA (DELIVERY VS PICK-UP)
+             ======================================================== -->
+        <div class="bg-zinc-950/80 p-4 rounded-2xl border border-zinc-800/90 space-y-3.5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">Modalidad de Entrega</h3>
+            <span id="delivery-fee-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20">
+              +$2.50 Delivery
+            </span>
+          </div>
+
+          <!-- Tabs Ergonómicos: Delivery vs Retiro en Local -->
+          <div class="grid grid-cols-2 gap-1.5 p-1 bg-zinc-900 rounded-xl border border-zinc-800">
+            <button 
+              type="button" 
+              id="mode-delivery"
+              onclick="setDeliveryMode('delivery')" 
+              class="py-2.5 px-3 text-xs font-bold rounded-lg transition-all bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md active:scale-95 flex items-center justify-center gap-1.5"
+            >
+              <span>🛵 Delivery</span>
+            </button>
+            <button 
+              type="button" 
+              id="mode-pickup"
+              onclick="setDeliveryMode('pickup')" 
+              class="py-2.5 px-3 text-xs font-bold rounded-lg transition-all text-zinc-400 hover:text-zinc-200 active:scale-95 flex items-center justify-center gap-1.5"
+            >
+              <span>🛍️ Retiro en Local</span>
+            </button>
+          </div>
+
+          <!-- Bloque de Selección de Zona & Dirección para Delivery -->
+          <div id="delivery-details-container" class="space-y-3 pt-1">
+            
+            <!-- Selector de Zona con recargos de Caracas -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="delivery-zone-select" class="block text-[11px] font-semibold text-zinc-400">
+                  Zona de Entrega en Caracas
+                </label>
+                <span id="zone-rate-bs" class="text-[10px] font-bold text-emerald-400 tracking-tight">112.50 Bs</span>
+              </div>
+              <div class="relative">
+                <select 
+                  id="delivery-zone-select" 
+                  onchange="handleZoneChange(this.value)"
+                  class="w-full text-xs p-3 pr-8 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 font-medium focus:border-orange-500 appearance-none transition-colors"
+                >
+                  <option value="chacao">Chacao / Altamira / Las Mercedes (+$2.50)</option>
+                  <option value="centro">Centro / La Candelaria / El Recreo (+$3.00)</option>
+                  <option value="otras">Otras Zonas de Caracas (A convenir) (+$4.00)</option>
+                </select>
+                <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none text-[10px]"></i>
+              </div>
+            </div>
+
+            <!-- Dirección de Entrega -->
+            <div id="address-container">
+              <label for="cust-address" class="block text-[11px] font-semibold text-zinc-400 mb-1">
+                Dirección exacta o punto de referencia
+              </label>
+              <textarea 
+                id="cust-address" 
+                placeholder="Urb., calle, edificio, piso o punto conocido en la zona..." 
+                rows="2" 
+                class="w-full text-xs p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 placeholder-zinc-500 focus:border-orange-500 transition-colors resize-none"
+              ></textarea>
+            </div>
+
+          </div>
+
+          <!-- Bloque Informativo de Retiro en Tienda (Pick-up) -->
+          <div id="pickup-details-container" class="hidden p-3 rounded-xl bg-zinc-900/70 border border-zinc-800/80 text-zinc-300 text-xs flex items-start gap-3">
+            <div class="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-400 flex items-center justify-center shrink-0 mt-0.5">
+              <i class="fa-solid fa-store text-xs"></i>
+            </div>
+            <div>
+              <p class="font-bold text-zinc-100 text-xs">Retiro gratuito en nuestro local</p>
+              <p class="text-[11px] text-zinc-400 mt-0.5">Av. Francisco de Miranda, Chacao (Te avisaremos por WhatsApp al tenerlo listo para entregar).</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ========================================================
+             SECCIÓN 2: DATOS PERSONALES & PAGO
+             ======================================================== -->
+        <div class="bg-zinc-950/80 p-4 rounded-2xl border border-zinc-800/90 space-y-3.5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">Datos Personales y Pago</h3>
+            <span class="text-[10px] text-zinc-500 font-semibold">* Requerido</span>
+          </div>
+
+          <!-- Nombre Completo -->
+          <div>
+            <label for="cust-name" class="block text-[11px] font-semibold text-zinc-400 mb-1">Tu Nombre Completo</label>
+            <input 
+              type="text" 
+              id="cust-name" 
+              placeholder="Ej: Carlos Silva" 
+              class="w-full text-xs p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 placeholder-zinc-500 focus:border-orange-500 transition-colors"
+            >
+          </div>
+
+          <!-- Selector de Método de Pago -->
+          <div>
+            <label for="cust-payment" class="block text-[11px] font-semibold text-zinc-400 mb-1">Método de Pago</label>
+            <div class="relative">
+              <select 
+                id="cust-payment" 
+                onchange="handlePaymentChange(this.value)"
+                class="w-full text-xs p-3 pr-8 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 focus:border-orange-500 appearance-none transition-colors"
+              >
+                <option value="pago_movil">⚡ Pago Móvil (Tasa Oficial BCV)</option>
+                <option value="efectivo">💵 Divisas en Efectivo (Billetes sanos sin tachaduras)</option>
+                <option value="zelle">💳 Zelle / Binance Pay (USDT)</option>
+                <option value="punto">🏪 Punto de Venta (Tarjeta de Débito en Local)</option>
+              </select>
+              <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none text-[10px]"></i>
+            </div>
+          </div>
+
+          <!-- ========================================================
+               MÓDULO RÁPIDO DE PAGO MÓVIL CON PORTAPAPELES
+               ======================================================== -->
+          <div id="pago-movil-card" class="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800/90 space-y-2.5 transition-all">
+            <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+              <div class="flex items-center gap-1.5 text-xs font-bold text-zinc-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50"></span>
+                <span>Datos para Pago Móvil</span>
+              </div>
+              <span class="text-[10px] text-zinc-400 font-mono">Tasa BCV del Día</span>
+            </div>
+
+            <!-- Ficha de Datos Bancarios -->
+            <div class="grid grid-cols-1 gap-1 text-[11px] font-medium">
+              <div class="flex justify-between items-center py-0.5">
+                <span class="text-zinc-400">Banco:</span>
+                <span class="font-bold text-zinc-100 font-mono" id="pm-banco">Banesco (0134)</span>
+              </div>
+              <div class="flex justify-between items-center py-0.5">
+                <span class="text-zinc-400">Teléfono:</span>
+                <span class="font-bold text-zinc-100 font-mono" id="pm-phone">0412-0000000</span>
+              </div>
+              <div class="flex justify-between items-center py-0.5">
+                <span class="text-zinc-400">C.I. / RIF:</span>
+                <span class="font-bold text-zinc-100 font-mono" id="pm-rif">V-00000000</span>
+              </div>
+            </div>
+
+            <!-- Botón Copiar al Portapapeles -->
+            <button 
+              type="button" 
+              id="btn-copy-pm"
+              onclick="copyPagoMovilData()"
+              class="w-full mt-1.5 py-2.5 px-3 rounded-lg bg-zinc-800 hover:bg-zinc-750 active:scale-95 border border-zinc-700/80 text-zinc-200 transition-all text-xs font-bold flex items-center justify-center gap-2 hover:border-orange-500/40"
+            >
+              <i class="fa-regular fa-copy text-zinc-400 text-xs"></i>
+              <span id="btn-copy-pm-text">Copiar Datos de Pago</span>
+            </button>
+          </div>
+
+          <!-- Observaciones / Notas -->
+          <div>
+            <label for="cust-notes" class="block text-[11px] font-semibold text-zinc-400 mb-1">Observaciones (Opcional)</label>
+            <input 
+              type="text" 
+              id="cust-notes" 
+              placeholder="Ej: Sin cebolla, cambio para billete de $20, etc." 
+              class="w-full text-xs p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 placeholder-zinc-500 focus:border-orange-500 transition-colors"
+            >
+          </div>
+
+        </div>
+
+        <!-- ========================================================
+             DESGLOSE FINANCIERO MULTI-MONEDA CON DELIVERY INCLUIDO
+             ======================================================== -->
+        <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-800/90 space-y-2">
+          <div class="flex justify-between text-xs text-zinc-400">
+            <span>Subtotal Productos:</span>
+            <span id="modal-subtotal-usd" class="font-semibold text-zinc-200">$0.00</span>
+          </div>
+
+          <div class="flex justify-between text-xs text-zinc-400">
+            <span id="modal-delivery-label">Costo de Envío (Delivery):</span>
+            <span id="modal-delivery-val" class="font-semibold text-orange-400">+$2.50</span>
+          </div>
+
+          <div class="flex justify-between text-xs text-zinc-400">
+            <span>Tasa Oficial BCV:</span>
+            <span id="modal-rate-indicator" class="font-semibold text-emerald-400">45.00 Bs/$</span>
+          </div>
+
+          <div class="border-t border-zinc-800/80 pt-2.5 flex justify-between items-baseline">
+            <div>
+              <span class="text-xs font-bold text-zinc-300">Total a Pagar:</span>
+              <span id="modal-payment-mode-label" class="block text-[10px] text-zinc-500 font-medium">Incluye costo de envío</span>
+            </div>
+            <div class="text-right">
+              <div id="modal-total-usd" class="text-xl font-black text-zinc-50 tracking-tight leading-none">$0.00</div>
+              <div id="modal-total-bs" class="text-xs font-bold text-emerald-400 mt-1">0.00 Bs</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Botón Fijo en la Base del Sheet: Enviar Pedido vía WhatsApp -->
+      <div class="p-4 border-t border-zinc-800/80 bg-zinc-900 pb-safe">
+        <button 
+          onclick="sendOrderToWhatsApp()" 
+          id="btn-whatsapp"
+          class="w-full bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-black py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 text-xs uppercase tracking-wider shadow-lg shadow-orange-950/60 active:scale-95 transition-all"
+        >
+          <i class="fa-brands fa-whatsapp text-lg"></i>
+          <span>Confirmar Pedido vía WhatsApp</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Micro-interaction -->
+  <div 
+    id="toast-notification" 
+    class="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-zinc-900/95 border border-zinc-700/80 text-zinc-100 text-xs font-bold px-4 py-2 rounded-full shadow-2xl backdrop-blur-md flex items-center gap-2 pointer-events-none transition-all duration-300 opacity-0 -translate-y-4"
+  >
+    <i class="fa-solid fa-check text-emerald-400"></i>
+    <span id="toast-message">Producto agregado</span>
+  </div>
+
+  <!-- ========================================================
+       5. LÓGICA DE NEGOCIO & MULTI-MONEDA (VANILLA JS NATIVO)
+       ======================================================== -->
+  <script>
+    // CONFIGURACIÓN OFICIAL DEL COMERCIO Y REGLAS DE CARACAS
+    const CONFIG = {
+      businessName: "BURGER CARACAS",
+      phone: "584120000000", // Reemplazar con el WhatsApp real del comercio
+      defaultBCV: 45.00,      // Tasa de contingencia en caso de fallo de red
+      currencySymbol: "$",
+      bsSymbol: "Bs",
+      // Datos bancarios oficiales para Pago Móvil
+      pagoMovil: {
+        banco: "Banesco (0134)",
+        telefono: "0412-0000000",
+        rif: "V-00000000"
+      },
+      // Zonas de delivery con recargos configurables en Caracas
+      deliveryZones: {
+        chacao: { name: "Chacao / Altamira / Las Mercedes", feeUSD: 2.50 },
+        centro: { name: "Centro / La Candelaria / El Recreo", feeUSD: 3.00 },
+        otras: { name: "Otras Zonas (A convenir)", feeUSD: 4.00 }
+      }
+    };
+
+    // ESTADO DE LA APLICACIÓN
+    let bcvRate = CONFIG.defaultBCV;
+    let products = [];
+    let cart = [];
+    let activeCategory = "Todos";
+    let searchQuery = "";
+    let deliveryMode = "delivery"; // 'delivery' | 'pickup'
+    let selectedZoneKey = "chacao"; // 'chacao' | 'centro' | 'otras'
+    let selectedPaymentMethod = "pago_movil";
+
+    // ========================================================
+    // TASA OFICIAL BCV (ve.dolarapi.com/v1/dolares/oficial)
+    // ========================================================
+    async function fetchRate() {
+      const rateEl = document.getElementById("bcv-rate");
+      const modalRateEl = document.getElementById("modal-rate-indicator");
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout
+
+        const res = await fetch("https://ve.dolarapi.com/v1/dolares/oficial", {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+
+        // Extrayendo el valor data.promedio según especificación
+        if (data && typeof data.promedio === "number" && data.promedio > 0) {
+          bcvRate = data.promedio;
+        } else if (data && typeof data.promedio === "string" && !isNaN(parseFloat(data.promedio))) {
+          bcvRate = parseFloat(data.promedio);
+        } else {
+          throw new Error("Estructura de respuesta inválida");
+        }
+      } catch (err) {
+        console.error("Fallo API BCV, recurriendo a tasa predefinida en CONFIG.defaultBCV:", err);
+        bcvRate = CONFIG.defaultBCV;
+      }
+
+      const formattedRate = bcvRate.toFixed(2);
+      if (rateEl) rateEl.innerText = formattedRate;
+      if (modalRateEl) modalRateEl.innerText = `${formattedRate} Bs/$`;
+
+      // Refrescar vistas con la tasa cargada
+      renderCatalog();
+      updateCartUI();
+    }
+
+    // ========================================================
+    // CARGAR CATÁLOGO DESDE products.json
+    // ========================================================
+    async function loadCatalog() {
+      try {
+        const res = await fetch("./products.json");
+        if (!res.ok) throw new Error(`Error cargando products.json (${res.status})`);
+        products = await res.json();
+        setupCategories();
+        renderCatalog();
+      } catch (err) {
+        console.error("Error al cargar products.json:", err);
+        const container = document.getElementById("catalog-container");
+        container.innerHTML = `
+          <div class="p-6 text-center bg-zinc-900 border border-zinc-800 rounded-2xl text-zinc-400">
+            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-2xl mb-2"></i>
+            <p class="text-xs font-semibold">No se pudo cargar el archivo products.json.</p>
+            <p class="text-[11px] text-zinc-500 mt-1">Verifica la ubicación del archivo local.</p>
+          </div>
+        `;
+      }
+    }
+
+    // ========================================================
+    // CATEGORÍAS DINÁMICAS
+    // ========================================================
+    function setupCategories() {
+      const container = document.getElementById("categories-container");
+      const cats = ["Todos", ...new Set(products.map(p => p.category).filter(Boolean))];
+
+      container.innerHTML = cats.map(cat => {
+        const isActive = cat === activeCategory;
+        const activeClasses = "bg-orange-500 text-white shadow-md shadow-orange-500/20";
+        const inactiveClasses = "bg-zinc-900 text-zinc-400 hover:text-zinc-200 border border-zinc-800/80";
+
+        return `
+          <button 
+            onclick="selectCategory('${cat}')"
+            class="px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap active:scale-95 transition-all ${isActive ? activeClasses : inactiveClasses}"
+          >
+            ${cat}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectCategory(cat) {
+      activeCategory = cat;
+      setupCategories();
+      renderCatalog();
+    }
+
+    // ========================================================
+    // BÚSQUEDA RÁPIDA
+    // ========================================================
+    function handleSearch(val) {
+      searchQuery = val.trim().toLowerCase();
+      const clearBtn = document.getElementById("clear-search-btn");
+      clearBtn.classList.toggle("hidden", searchQuery === "");
+      renderCatalog();
+    }
+
+    function clearSearch() {
+      const input = document.getElementById("search-input");
+      input.value = "";
+      searchQuery = "";
+      document.getElementById("clear-search-btn").classList.add("hidden");
+      renderCatalog();
+    }
+
+    // ========================================================
+    // RENDERIZADO DEL CATÁLOGO (ERGONOMÍA & TARJETAS)
+    // ========================================================
+    function renderCatalog() {
+      const container = document.getElementById("catalog-container");
+      
+      let filtered = products;
+
+      if (activeCategory !== "Todos") {
+        filtered = filtered.filter(p => p.category === activeCategory);
+      }
+
+      if (searchQuery) {
+        filtered = filtered.filter(p => 
+          p.name.toLowerCase().includes(searchQuery) || 
+          (p.description && p.description.toLowerCase().includes(searchQuery))
+        );
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center bg-zinc-900 border border-zinc-800 rounded-2xl text-zinc-500">
+            <i class="fa-solid fa-burger text-2xl mb-2 text-zinc-600"></i>
+            <p class="text-xs font-bold text-zinc-400">No se encontraron productos</p>
+            <p class="text-[11px] mt-1">Prueba con otra categoría o término de búsqueda.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(p => {
+        const priceBs = (p.priceUSD * bcvRate).toFixed(2);
+        const itemInCart = cart.find(i => i.id === p.id);
+        const qty = itemInCart ? itemInCart.qty : 0;
+
+        // Renderizado del control ergonómico: Botón "+ Agregar" o Stepper interactivo
+        const actionControl = qty === 0 
+          ? `
+            <button 
+              onclick="addToCart(${p.id})" 
+              class="bg-orange-600 hover:bg-orange-500 active:scale-95 transition-all text-white font-bold text-xs px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm shadow-orange-950/40"
+            >
+              <i class="fa-solid fa-plus text-[10px]"></i>
+              <span>Agregar</span>
+            </button>
+          `
+          : `
+            <div class="flex items-center gap-1.5 bg-zinc-950 border border-zinc-800 p-1 rounded-xl">
+              <button 
+                onclick="changeQty(${p.id}, -1)" 
+                aria-label="Restar uno"
+                class="w-6 h-6 rounded-lg bg-zinc-800 hover:bg-zinc-700 active:scale-90 text-zinc-300 font-bold text-xs flex items-center justify-center transition"
+              >
+                <i class="fa-solid fa-minus text-[9px]"></i>
+              </button>
+              <span class="text-xs font-bold text-zinc-100 px-1 min-w-[18px] text-center">${qty}</span>
+              <button 
+                onclick="changeQty(${p.id}, 1)" 
+                aria-label="Sumar uno"
+                class="w-6 h-6 rounded-lg bg-orange-600 hover:bg-orange-500 active:scale-90 text-white font-bold text-xs flex items-center justify-center transition"
+              >
+                <i class="fa-solid fa-plus text-[9px]"></i>
+              </button>
+            </div>
+          `;
+
+        return `
+          <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-3.5 flex gap-3.5 transition-all hover:border-zinc-700/80">
+            <!-- Imagen cuadrada fija con filtro de alta resistencia -->
+            <img 
+              src="${p.image}" 
+              alt="${p.name}" 
+              loading="lazy"
+              onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300'"
+              class="aspect-square w-24 h-24 object-cover rounded-xl product-img shrink-0 bg-zinc-950 border border-zinc-800/60"
+            >
+            
+            <!-- Detalles del Producto -->
+            <div class="flex flex-col justify-between flex-grow min-w-0">
+              <div>
+                <h3 class="font-bold text-sm text-zinc-100 leading-snug tracking-tight truncate">${p.name}</h3>
+                <p class="text-[11px] text-zinc-400 line-clamp-2 mt-1 leading-snug">${p.description || ''}</p>
+              </div>
+
+              <!-- Precios Multi-Moneda y CTA -->
+              <div class="flex items-end justify-between mt-2.5">
+                <div>
+                  <span class="font-black text-sm text-zinc-50 tracking-tight">$${p.priceUSD.toFixed(2)}</span>
+                  <span class="block text-[11px] font-bold text-emerald-400 tracking-tight">${priceBs} Bs</span>
+                </div>
+                ${actionControl}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ========================================================
+    // GESTIÓN DEL CARRITO (ESTADO & CÁLCULOS MULTI-MONEDA)
+    // ========================================================
+    function addToCart(id) {
+      const prod = products.find(p => p.id === id);
+      if (!prod) return;
+
+      const item = cart.find(i => i.id === id);
+      if (item) {
+        item.qty++;
+      } else {
+        cart.push({ ...prod, qty: 1 });
+      }
+
+      showToast(`Agregado: ${prod.name}`);
+      updateCartUI();
+      renderCatalog();
+    }
+
+    function changeQty(id, delta) {
+      const item = cart.find(i => i.id === id);
+      if (!item) return;
+
+      item.qty += delta;
+      if (item.qty <= 0) {
+        cart = cart.filter(i => i.id !== id);
+      }
+
+      updateCartUI();
+      renderCatalog();
+    }
+
+    function removeItem(id) {
+      cart = cart.filter(i => i.id !== id);
+      updateCartUI();
+      renderCatalog();
+    }
+
+    // Obtener recargo actual de delivery
+    function getCurrentDeliveryFee() {
+      if (deliveryMode === "pickup") return 0;
+      const zone = CONFIG.deliveryZones[selectedZoneKey];
+      return zone ? zone.feeUSD : 2.50;
+    }
+
+    function updateCartUI() {
+      const totalCount = cart.reduce((acc, item) => acc + item.qty, 0);
+      const subtotalUSD = cart.reduce((acc, item) => acc + (item.priceUSD * item.qty), 0);
+      const deliveryFeeUSD = getCurrentDeliveryFee();
+      const totalUSD = subtotalUSD + deliveryFeeUSD;
+      const totalBs = (totalUSD * bcvRate).toFixed(2);
+      const subtotalBs = (subtotalUSD * bcvRate).toFixed(2);
+
+      // 1. Header Badge
+      const cartBadge = document.getElementById("cart-badge");
+      cartBadge.innerText = totalCount;
+      cartBadge.classList.toggle("hidden", totalCount === 0);
+
+      // 2. Barra Flotante Inferior (Bottom Floating Pill)
+      const floatingPill = document.getElementById("floating-pill");
+      document.getElementById("floating-items-count").innerText = totalCount;
+      document.getElementById("floating-total-usd").innerText = `$${subtotalUSD.toFixed(2)}`;
+      document.getElementById("floating-total-bs").innerText = `${subtotalBs} Bs`;
+
+      if (totalCount > 0) {
+        floatingPill.classList.remove("translate-y-28", "opacity-0", "pointer-events-none");
+        floatingPill.classList.add("translate-y-0", "opacity-100", "pointer-events-auto");
+      } else {
+        floatingPill.classList.add("translate-y-28", "opacity-0", "pointer-events-none");
+        floatingPill.classList.remove("translate-y-0", "opacity-100", "pointer-events-auto");
+      }
+
+      // 3. Totales & Desglose dentro del Bottom Sheet
+      document.getElementById("sheet-item-count").innerText = `${totalCount} ${totalCount === 1 ? 'ítem' : 'ítems'}`;
+      document.getElementById("modal-subtotal-usd").innerText = `$${subtotalUSD.toFixed(2)}`;
+      
+      const deliveryLabel = document.getElementById("modal-delivery-label");
+      const deliveryVal = document.getElementById("modal-delivery-val");
+      const deliveryBadge = document.getElementById("delivery-fee-badge");
+      const zoneBsPreview = document.getElementById("zone-rate-bs");
+      const modeLabel = document.getElementById("modal-payment-mode-label");
+
+      if (deliveryMode === "delivery") {
+        const zone = CONFIG.deliveryZones[selectedZoneKey] || CONFIG.deliveryZones.chacao;
+        const feeBs = (zone.feeUSD * bcvRate).toFixed(2);
+        deliveryLabel.innerText = `Costo de Envío (${zone.name.split('/')[0].trim()}):`;
+        deliveryVal.innerText = `+$${zone.feeUSD.toFixed(2)}`;
+        deliveryBadge.innerText = `+$${zone.feeUSD.toFixed(2)} Delivery`;
+        deliveryBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20";
+        zoneBsPreview.innerText = `${feeBs} Bs`;
+        modeLabel.innerText = `Incluye envío a ${zone.name.split('/')[0].trim()}`;
+      } else {
+        deliveryLabel.innerText = "Modalidad:";
+        deliveryVal.innerText = "Gratis (Retiro en Local)";
+        deliveryBadge.innerText = "Gratis (Retiro)";
+        deliveryBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+        modeLabel.innerText = "Retiro en local (Sin recargo de envío)";
+      }
+
+      document.getElementById("modal-total-usd").innerText = `$${totalUSD.toFixed(2)}`;
+      document.getElementById("modal-total-bs").innerText = `${totalBs} Bs`;
+
+      // 4. Renderizar ítems dentro del Bottom Sheet
+      const itemsList = document.getElementById("cart-items-list");
+      if (cart.length === 0) {
+        itemsList.innerHTML = `
+          <div class="py-8 text-center text-zinc-500">
+            <i class="fa-solid fa-basket-shopping text-3xl mb-2 text-zinc-700"></i>
+            <p class="text-xs font-bold text-zinc-400">Tu carrito está vacío</p>
+            <p class="text-[11px] text-zinc-600 mt-0.5">Agrega tus productos favoritos del menú.</p>
+          </div>
+        `;
+        document.getElementById("btn-whatsapp").classList.add("opacity-50", "pointer-events-none");
+        return;
+      }
+
+      document.getElementById("btn-whatsapp").classList.remove("opacity-50", "pointer-events-none");
+
+      itemsList.innerHTML = cart.map(item => {
+        const itemTotalBs = (item.priceUSD * item.qty * bcvRate).toFixed(2);
+        return `
+          <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800/80 flex items-center justify-between gap-3">
+            <img 
+              src="${item.image}" 
+              alt="${item.name}" 
+              class="w-12 h-12 rounded-lg object-cover product-img shrink-0 bg-zinc-900 border border-zinc-800"
+            >
+            
+            <div class="flex-grow min-w-0">
+              <h4 class="text-xs font-bold text-zinc-100 truncate">${item.name}</h4>
+              <p class="text-[10px] text-zinc-400">$${item.priceUSD.toFixed(2)} c/u</p>
+              <div class="text-[11px] font-black text-orange-400 mt-0.5">
+                $${(item.priceUSD * item.qty).toFixed(2)} 
+                <span class="text-[10px] font-semibold text-emerald-400">(${itemTotalBs} Bs)</span>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 shrink-0">
+              <div class="flex items-center bg-zinc-900 border border-zinc-800 rounded-lg p-0.5">
+                <button 
+                  onclick="changeQty(${item.id}, -1)" 
+                  class="w-5 h-5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] font-bold flex items-center justify-center transition"
+                >
+                  <i class="fa-solid fa-minus text-[8px]"></i>
+                </button>
+                <span class="text-xs font-bold text-zinc-100 px-2">${item.qty}</span>
+                <button 
+                  onclick="changeQty(${item.id}, 1)" 
+                  class="w-5 h-5 rounded bg-orange-600 hover:bg-orange-500 text-white text-[10px] font-bold flex items-center justify-center transition"
+                >
+                  <i class="fa-solid fa-plus text-[8px]"></i>
+                </button>
+              </div>
+
+              <button 
+                onclick="removeItem(${item.id})" 
+                aria-label="Eliminar producto"
+                class="w-7 h-7 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-red-500/10 flex items-center justify-center transition"
+              >
+                <i class="fa-regular fa-trash-can text-xs"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ========================================================
+    // CONTROL DEL BOTTOM SHEET (DESLIZANTE DESDE ABAJO 86%)
+    // ========================================================
+    function openCart() {
+      const drawer = document.getElementById("cart-drawer");
+      const backdrop = document.getElementById("cart-backdrop");
+      const sheet = document.getElementById("bottom-sheet");
+
+      drawer.classList.remove("pointer-events-none");
+      backdrop.classList.remove("opacity-0");
+      backdrop.classList.add("opacity-100");
+
+      sheet.classList.remove("translate-y-full");
+      sheet.classList.add("translate-y-0");
+
+      document.body.style.overflow = "hidden"; // Bloquear scroll del fondo
+      updateCartUI();
+    }
+
+    function closeCart() {
+      const drawer = document.getElementById("cart-drawer");
+      const backdrop = document.getElementById("cart-backdrop");
+      const sheet = document.getElementById("bottom-sheet");
+
+      backdrop.classList.remove("opacity-100");
+      backdrop.classList.add("opacity-0");
+
+      sheet.classList.remove("translate-y-0");
+      sheet.classList.add("translate-y-full");
+
+      setTimeout(() => {
+        drawer.classList.add("pointer-events-none");
+        document.body.style.overflow = "";
+      }, 300);
+    }
+
+    // Gesto táctil nativo para arrastrar y cerrar el Bottom Sheet
+    (function setupSheetGestures() {
+      const handleArea = document.getElementById("sheet-handle-area");
+      const sheet = document.getElementById("bottom-sheet");
+      let startY = 0;
+      let currentY = 0;
+
+      handleArea.addEventListener("touchstart", (e) => {
+        startY = e.touches[0].clientY;
+      }, { passive: true });
+
+      handleArea.addEventListener("touchmove", (e) => {
+        currentY = e.touches[0].clientY;
+        const delta = currentY - startY;
+        if (delta > 0) {
+          sheet.style.transform = `translateY(${delta}px)`;
+        }
+      }, { passive: true });
+
+      handleArea.addEventListener("touchend", () => {
+        const delta = currentY - startY;
+        sheet.style.transform = "";
+        if (delta > 70) {
+          closeCart();
+        }
+        startY = 0;
+        currentY = 0;
+      });
+    })();
+
+    // ========================================================
+    // MODALIDAD: DELIVERY VS RETIRO EN LOCAL & ZONAS
+    // ========================================================
+    function setDeliveryMode(mode) {
+      deliveryMode = mode;
+      const btnDelivery = document.getElementById("mode-delivery");
+      const btnPickup = document.getElementById("mode-pickup");
+      const deliveryContainer = document.getElementById("delivery-details-container");
+      const pickupContainer = document.getElementById("pickup-details-container");
+
+      if (mode === "delivery") {
+        btnDelivery.className = "py-2.5 px-3 text-xs font-bold rounded-lg transition-all bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md active:scale-95 flex items-center justify-center gap-1.5";
+        btnPickup.className = "py-2.5 px-3 text-xs font-bold rounded-lg transition-all text-zinc-400 hover:text-zinc-200 active:scale-95 flex items-center justify-center gap-1.5";
+        deliveryContainer.classList.remove("hidden");
+        pickupContainer.classList.add("hidden");
+      } else {
+        btnPickup.className = "py-2.5 px-3 text-xs font-bold rounded-lg transition-all bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md active:scale-95 flex items-center justify-center gap-1.5";
+        btnDelivery.className = "py-2.5 px-3 text-xs font-bold rounded-lg transition-all text-zinc-400 hover:text-zinc-200 active:scale-95 flex items-center justify-center gap-1.5";
+        deliveryContainer.classList.add("hidden");
+        pickupContainer.classList.remove("hidden");
+      }
+
+      updateCartUI();
+    }
+
+    function handleZoneChange(zoneKey) {
+      selectedZoneKey = zoneKey;
+      updateCartUI();
+    }
+
+    // ========================================================
+    // MÉTODO DE PAGO Y MÓDULO RÁPIDO DE PAGO MÓVIL
+    // ========================================================
+    function handlePaymentChange(method) {
+      selectedPaymentMethod = method;
+      const pmCard = document.getElementById("pago-movil-card");
+      if (method === "pago_movil") {
+        pmCard.classList.remove("hidden");
+      } else {
+        pmCard.classList.add("hidden");
+      }
+    }
+
+    // Copiar datos de Pago Móvil en una sola línea al portapapeles
+    async function copyPagoMovilData() {
+      const pm = CONFIG.pagoMovil;
+      // Formato limpio y exacto para banca venezolana en una sola línea
+      const formattedData = `${pm.banco} | ${pm.telefono} | ${pm.rif}`;
+
+      let copied = false;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(formattedData);
+          copied = true;
+        } else {
+          // Fallback para contextos no-https o navegadores móviles antiguos
+          const textArea = document.createElement("textarea");
+          textArea.value = formattedData;
+          textArea.style.position = "fixed";
+          textArea.style.left = "-999999px";
+          document.body.appendChild(textArea);
+          textArea.focus();
+          textArea.select();
+          copied = document.execCommand("copy");
+          document.body.removeChild(textArea);
+        }
+      } catch (err) {
+        console.error("Error al copiar datos:", err);
+        copied = false;
+      }
+
+      const btnText = document.getElementById("btn-copy-pm-text");
+      const btn = document.getElementById("btn-copy-pm");
+      const icon = btn.querySelector("i");
+
+      if (copied) {
+        btnText.innerText = "¡Copiado!";
+        btnText.className = "text-emerald-400 font-extrabold";
+        icon.className = "fa-solid fa-check text-emerald-400 text-xs";
+        btn.classList.add("border-emerald-500/50", "bg-emerald-950/20");
+        showToast("Datos de Pago Móvil copiados");
+
+        setTimeout(() => {
+          btnText.innerText = "Copiar Datos de Pago";
+          btnText.className = "";
+          icon.className = "fa-regular fa-copy text-zinc-400 text-xs";
+          btn.classList.remove("border-emerald-500/50", "bg-emerald-950/20");
+        }, 2200);
+      } else {
+        showToast("No se pudo copiar automáticamente");
+      }
+    }
+
+    // ========================================================
+    // ENVÍO DE ORDEN POR WHATSAPP (CON FORMATO VENEZOLANO)
+    // ========================================================
+    function sendOrderToWhatsApp() {
+      if (cart.length === 0) {
+        showToast("Tu carrito está vacío");
+        return;
+      }
+
+      const name = document.getElementById("cust-name").value.trim();
+      const address = document.getElementById("cust-address").value.trim();
+      const paymentSelect = document.getElementById("cust-payment");
+      const paymentText = paymentSelect.options[paymentSelect.selectedIndex].text;
+      const notes = document.getElementById("cust-notes").value.trim();
+
+      if (!name) {
+        alert("Por favor ingresa tu nombre completo para continuar.");
+        document.getElementById("cust-name").focus();
+        return;
+      }
+
+      if (deliveryMode === "delivery" && !address) {
+        alert("Por favor ingresa la dirección de entrega o punto de referencia.");
+        document.getElementById("cust-address").focus();
+        return;
+      }
+
+      const subtotalUSD = cart.reduce((acc, item) => acc + (item.priceUSD * item.qty), 0);
+      const deliveryFeeUSD = getCurrentDeliveryFee();
+      const totalUSD = subtotalUSD + deliveryFeeUSD;
+      const totalBs = (totalUSD * bcvRate).toFixed(2);
+      const subtotalBs = (subtotalUSD * bcvRate).toFixed(2);
+      const deliveryFeeBs = (deliveryFeeUSD * bcvRate).toFixed(2);
+
+      // Zona seleccionada
+      const zone = CONFIG.deliveryZones[selectedZoneKey] || CONFIG.deliveryZones.chacao;
+
+      // Construcción del mensaje estructurado para WhatsApp
+      let msg = `🍔 *NUEVO PEDIDO - ${CONFIG.businessName}*\n`;
+      msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `👤 *Cliente:* ${name}\n`;
+
+      if (deliveryMode === "delivery") {
+        msg += `📍 *Modalidad:* 🛵 Delivery a ${zone.name}\n`;
+        msg += `🏠 *Dirección:* ${address}\n`;
+      } else {
+        msg += `📍 *Modalidad:* 🛍️ Retiro en Tienda\n`;
+      }
+
+      msg += `💳 *Método de Pago:* ${paymentText}\n`;
+      if (notes) {
+        msg += `📝 *Observaciones:* ${notes}\n`;
+      }
+      msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `📋 *DETALLE DEL PEDIDO:*\n`;
+
+      cart.forEach((i, idx) => {
+        const itemTotalUSD = (i.priceUSD * i.qty).toFixed(2);
+        const itemTotalBs = (i.priceUSD * i.qty * bcvRate).toFixed(2);
+        msg += `${idx + 1}. *${i.qty}x* ${i.name}\n`;
+        msg += `    └ $${itemTotalUSD} (${itemTotalBs} Bs)\n`;
+      });
+
+      msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `Subtotal Productos: $${subtotalUSD.toFixed(2)} (${subtotalBs} Bs)\n`;
+
+      if (deliveryMode === "delivery") {
+        msg += `Costo de Envío: +$${deliveryFeeUSD.toFixed(2)} (${deliveryFeeBs} Bs)\n`;
+      } else {
+        msg += `Costo de Envío: Gratis ($0.00 Bs)\n`;
+      }
+
+      msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `💵 *TOTAL USD:* $${totalUSD.toFixed(2)}\n`;
+      msg += `🇻🇪 *TOTAL BS (Tasa BCV ${bcvRate.toFixed(2)} Bs/$):* ${totalBs} Bs\n`;
+      msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `_Enviado desde el Menú Digital Web. Aguardo confirmación y datos para el pago._`;
+
+      const encoded = encodeURIComponent(msg);
+      window.open(`https://wa.me/${CONFIG.phone}?text=${encoded}`, '_blank');
+    }
+
+    // ========================================================
+    // TOAST NOTIFICATIONS (FEEDBACK VISUAL HÁPTICO)
+    // ========================================================
+    let toastTimeout;
+    function showToast(text) {
+      const toast = document.getElementById("toast-notification");
+      const toastMsg = document.getElementById("toast-message");
+      toastMsg.innerText = text;
+
+      clearTimeout(toastTimeout);
+      toast.classList.remove("opacity-0", "-translate-y-4");
+      toast.classList.add("opacity-100", "translate-y-0");
+
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove("opacity-100", "translate-y-0");
+        toast.classList.add("opacity-0", "-translate-y-4");
+      }, 1800);
+    }
+
+    // Tecla ESC para cerrar Bottom Sheet
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeCart();
+    });
+
+    // ========================================================
+    // INICIALIZACIÓN AL CARGAR EL DOM
+    // ========================================================
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchRate();
+      loadCatalog();
+    });
+  </script>
+</body>
+</html>
